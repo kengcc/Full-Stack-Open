@@ -5,12 +5,15 @@ const App = (props) => {
   // const [persons, setPersons] = useState([{name: "Arto Hellas"}])
   const [persons, setPersons] = useState(props.persons)
   const [newName, setNewName] = useState("")
+  const [newNumber, setNewNumber] = useState("")
   const [showAll, setShowAll] = useState(true)
 
   const addPerson = (event) => {
     event.preventDefault()
 
-    const nameExists = persons.some((person) => person.name === newName)
+    const nameExists = persons.some(
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
+    )
 
     if (nameExists) {
       alert(`${newName} is already added to phonebook`)
@@ -19,12 +22,14 @@ const App = (props) => {
 
     const personObject = {
       name: newName,
+      number: newNumber,
       important: Math.random() < 0.5,
       id: String(persons.length + 1),
     }
 
     setPersons(persons.concat(personObject))
     setNewName("")
+    setNewNumber("")
   }
 
   const handlePersonChange = (event) => {
@@ -32,6 +37,9 @@ const App = (props) => {
     setNewName(event.target.value)
   }
 
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
   const personsToShow = showAll
     ? persons
     : persons.filter((person) => person.important === true)
@@ -43,6 +51,9 @@ const App = (props) => {
       <form onSubmit={addPerson}>
         <div>
           name: <input value={newName} onChange={handlePersonChange} />
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={handleNumberChange} />
         </div>
         <div>
           <button type="submit">add</button>
