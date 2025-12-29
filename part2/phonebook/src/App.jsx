@@ -3,6 +3,8 @@ import Persons from "./components/Persons"
 import Filter from "./components/Filter"
 import PersonForm from "./components/PersonForm"
 import personService from "./services/persons"
+import Notification from "./components/Notification"
+import Footer from "./components/Footer"
 
 const App = () => {
   // const [persons, setPersons] = useState([{name: "Arto Hellas"}])
@@ -10,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState("New person")
   const [newNumber, setNewNumber] = useState("")
   const [filter, setFilter] = useState("")
+  const [notification, setNotification] = useState({message: null, type: null})
 
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
@@ -42,9 +45,13 @@ const App = () => {
           setNewNumber("")
         })
         .catch(() => {
-          alert(
-            `Information of ${nameExists.name} has already been removed from server`
-          )
+          setNotification({
+            message: `Information of '${nameExists.name}' was already removed from server`,
+            type: "error",
+          })
+          setTimeout(() => {
+            setNotification({message: null, type: null})
+          }, 5000)
           setPersons(persons.filter((p) => p.id !== nameExists.id))
         })
 
@@ -62,6 +69,13 @@ const App = () => {
       setPersons(persons.concat(returnedPerson))
       setNewName("")
       setNewNumber("")
+      setNotification({
+        message: `Added ${returnedPerson.name}`,
+        type: "message",
+      })
+      setTimeout(() => {
+        setNotification({message: null, type: null})
+      }, 5000)
     })
   }
 
@@ -78,9 +92,15 @@ const App = () => {
         setPersons(persons.filter((p) => p.id !== id))
       })
       .catch(() => {
+        setNotification({
+          message: `Information of '${person.name}' was already removed from server`,
+          type: "error",
+        })
+        setTimeout(() => {
+          setNotification({message: null, type: null})
+        }, 5000)
         // if already deleted from server, still remove from UI
         setPersons(persons.filter((p) => p.id !== id))
-        alert(`${person.name} was already removed from server`)
       })
   }
 
@@ -94,7 +114,8 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+      <Notification message={notification.message} type={notification.type} />
       <Filter value={filter} onChange={handleFilterChange} />
       <h2>Add a new contact</h2>
       <PersonForm
@@ -107,6 +128,7 @@ const App = () => {
 
       <h2>Numbers</h2>
       <Persons persons={personsToShow} onDelete={deletePerson} />
+      <Footer />
     </div>
   )
 }
