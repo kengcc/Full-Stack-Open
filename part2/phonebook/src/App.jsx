@@ -1,14 +1,21 @@
-import {useState} from "react"
+import {useState, useEffect} from "react"
 import Persons from "./components/Persons"
 import Filter from "./components/Filter"
 import PersonForm from "./components/PersonForm"
+import personService from "./services/persons"
 
-const App = (props) => {
+const App = () => {
   // const [persons, setPersons] = useState([{name: "Arto Hellas"}])
-  const [persons, setPersons] = useState(props.persons)
-  const [newName, setNewName] = useState("")
+  const [persons, setPersons] = useState([])
+  const [newName, setNewName] = useState("New person")
   const [newNumber, setNewNumber] = useState("")
   const [filter, setFilter] = useState("")
+
+  useEffect(() => {
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons)
+    })
+  }, []) // run once on first render
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -29,23 +36,35 @@ const App = (props) => {
       id: String(persons.length + 1),
     }
 
-    setPersons(persons.concat(personObject))
-    setNewName("")
-    setNewNumber("")
+    personService.create(personObject).then((returnedPerson) => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName("")
+      setNewNumber("")
+    })
   }
 
-  const handlePersonChange = (event) => {
-    console.log(event.target.value)
-    setNewName(event.target.value)
+  const deletePerson = (id) => {
+    const person = persons.find((p) => p.id === id)
+    if (!person) return
+
+    const ok = window.confirm(`Delete ${person.name}?`)
+    if (!ok) return
+
+    personService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter((p) => p.id !== id))
+      })
+      .catch(() => {
+        // if already deleted from server, still remove from UI
+        setPersons(persons.filter((p) => p.id !== id))
+        alert(`${person.name} was already removed from server`)
+      })
   }
 
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
-
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value)
-  }
+  const handlePersonChange = (event) => setNewName(event.target.value)
+  const handleNumberChange = (event) => setNewNumber(event.target.value)
+  const handleFilterChange = (event) => setFilter(event.target.value)
 
   const personsToShow = persons.filter((person) =>
     person.name.toLowerCase().includes(filter.toLowerCase())
@@ -65,7 +84,7 @@ const App = (props) => {
       />
 
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} onDelete={deletePerson} />
     </div>
   )
 }
