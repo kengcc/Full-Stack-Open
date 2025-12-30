@@ -1,0 +1,17 @@
+POST http://localhost:3001/api/notes
+content-type: application/json
+
+{
+    "content": "HTML 9s is easy",
+    "important": true
+}
+
+###
+
+POST http://localhost:3001/api/notes
+content-type: application/json
+
+{
+    "name": "same 2",
+    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
