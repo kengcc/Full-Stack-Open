@@ -1,5 +1,6 @@
 const express = require("express")
 const app = express()
+app.use(express.static("dist")) // show frontend build files
 
 const requestLogger = (request, response, next) => {
   console.log("Method:", request.method)
