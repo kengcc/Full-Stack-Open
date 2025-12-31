@@ -11,6 +11,9 @@ const requestLogger = (request, response, next) => {
 app.use(express.json())
 app.use(requestLogger)
 
+const cors = require("cors")
+app.use(cors())
+
 let notes = [
   {
     id: "1",
