@@ -9,8 +9,8 @@ POST http://localhost:3001/api/persons
 content-type: application/json
 
 {
-    "name": "VIP 1",
-    "number": "11111"
+    "name": "VIP 6",
+    "number": "116661444411"
 }
 
 ###
@@ -22,3 +22,7 @@ content-type: application/json
     "name": "VIP 2",
     "number": "22222"
 }
+
+###
+
+DELETE http://localhost:3001/api/persons/1
