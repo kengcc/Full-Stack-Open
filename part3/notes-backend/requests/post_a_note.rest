@@ -16,7 +16,7 @@ content-type: application/json
     "time": "Wed, 21 Oct 2015 18:27:50 GMT"
 }
 
-### test invalid name
+### test invalid content
 POST http://localhost:3001/api/notes
 content-type: application/json
 
