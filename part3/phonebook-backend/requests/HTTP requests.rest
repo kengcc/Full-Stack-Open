@@ -23,6 +23,14 @@ content-type: application/json
     "number": "22222"
 }
 
-###
+### test invalid name
+POST http://localhost:3001/api/persons
+content-type: application/json
 
+{
+    "name": "VP",
+    "number": "22222"
+}
+
+### 
 DELETE http://localhost:3001/api/persons/1

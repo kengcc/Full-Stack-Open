@@ -65,18 +65,28 @@ const App = () => {
       id: String(persons.length + 1),
     }
 
-    personService.create(personObject).then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson))
-      setNewName("")
-      setNewNumber("")
-      setNotification({
-        message: `Added ${returnedPerson.name}`,
-        type: "message",
+    personService
+      .create(personObject)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName("")
+        setNewNumber("")
+        setNotification({
+          message: `Added ${returnedPerson.name}`,
+          type: "message",
+        })
+        setTimeout(() => {
+          setNotification({message: null, type: null})
+        }, 5000)
       })
-      setTimeout(() => {
-        setNotification({message: null, type: null})
-      }, 5000)
-    })
+      .catch((error) => {
+        const message =
+          error.response?.data?.error || "Failed to add person to phonebook"
+        setNotification({message, type: "error"})
+        setTimeout(() => {
+          setNotification({message: null, type: null})
+        }, 5000)
+      })
   }
 
   const deletePerson = (id) => {
