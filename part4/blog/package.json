@@ -9,9 +9,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "lint": "eslint .",
-    "build:ui": "rm -rf dist && cd ../notes && npm run build && cp -r dist ../notes-backend",
+    "build:ui": "rm -rf dist && cd ../blog-frontend && npm run build && cp -r dist ../blog",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "dependencies": {
