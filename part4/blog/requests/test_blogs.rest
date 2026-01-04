@@ -1,0 +1,32 @@
+GET http://localhost:3001/api/blogs
+
+###
+
+POST http://localhost:3001/api/blogs
+content-type: application/json
+
+{
+    "title": "HTML 9s is easy",
+    "author": "KCC",
+    "url": "www.html9s.com",
+    "likes": 1000
+}
+
+###
+
+POST http://localhost:3001/api/blogs
+content-type: application/json
+
+{
+    "name": "same 2",
+    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
+
+### test invalid content
+POST http://localhost:3001/api/blogs
+content-type: application/json
+
+{
+    "content": "lol",
+    "important": true
+}
