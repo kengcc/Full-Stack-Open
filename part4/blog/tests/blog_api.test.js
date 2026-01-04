@@ -106,31 +106,52 @@ test('blog without url is rejected with status 400', async () => {
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 })
 
-// test('note without content is not added', async () => {
-//   const newNote = {
-//     important: true,
-//   }
+test('a blog can be deleted', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
 
-//   await api.post('/api/notes').send(newNote).expect(400)
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
 
-//   const notesAtEnd = await helper.notesInDb()
+  const blogsAtEnd = await helper.blogsInDb()
 
-//   assert.strictEqual(notesAtEnd.length, helper.initialNotes.length)
-// })
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+  const ids = blogsAtEnd.map((blog) => blog.id)
+  assert(!ids.includes(blogToDelete.id))
+})
 
-// test('a blog can be deleted', async () => {
-//   const blogsAtStart = await helper.blogsInDb()
-//   const blogToDelete = blogsAtStart[0]
+test('attempting to delete non-existing blog returns 404', async () => {
+  const nonExisting = await helper.nonExistingId()
 
-//   await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+  await api.delete(`/api/blogs/${nonExisting}`).expect(404)
 
-//   const blogsAtEnd = await helper.blogsInDb()
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+})
 
-//   const contents = blogsAtEnd.map((n) => n.content)
-//   assert(!contents.includes(blogToDelete.content))
+test('a blog likes count can be updated', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
 
-//   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
-// })
+  const updatedLikes = blogToUpdate.likes + 5
+
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send({ likes: updatedLikes })
+    .expect(200)
+
+  assert.strictEqual(response.body.likes, updatedLikes)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const updatedBlog = blogsAtEnd.find((blog) => blog.id === blogToUpdate.id)
+  assert(updatedBlog)
+  assert.strictEqual(updatedBlog.likes, updatedLikes)
+})
+
+test('updating a non-existing blog returns 404', async () => {
+  const nonExisting = await helper.nonExistingId()
+
+  await api.put(`/api/blogs/${nonExisting}`).send({ likes: 1 }).expect(404)
+})
 
 after(async () => {
   await mongoose.connection.close()
