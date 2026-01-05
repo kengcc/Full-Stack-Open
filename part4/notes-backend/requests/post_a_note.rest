@@ -1,9 +1,10 @@
 POST http://localhost:3001/api/notes
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2OTVhNmIyZWVlMDM3M2M4N2JmODNkMmYiLCJpYXQiOjE3Njc2MjA0MjV9.K-VIQE7EkIaUnd0vGmaXhW2Mq7B8cczMeXja6Ro9vyE
 
 {
-    "content": "HTML 9s is easy",
-    "important": true
+    "content": "this is a note created with userId and jwt token",
+    "important": false
 }
 
 ###
