@@ -6,6 +6,7 @@ import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -53,6 +54,20 @@ const App = () => {
     }
   }
 
+  const addBlog = (event) => {
+    event.preventDefault()
+    const blogObject = {
+      title: newBlog.title,
+      author: newBlog.author,
+      url: newBlog.url,
+    }
+
+    blogService.create(blogObject).then((returnedBlog) => {
+      setBlogs(blogs.concat(returnedBlog))
+      setNewBlog({ title: '', author: '', url: '' })
+    })
+  }
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -81,6 +96,42 @@ const App = () => {
 
   const blogList = () => blogs.map((blog) => <Blog key={blog.id} blog={blog} />)
 
+  const blogForm = () => (
+    <form onSubmit={addBlog}>
+      <div>
+        title
+        <input
+          type='text'
+          value={newBlog.title}
+          onChange={({ target }) =>
+            setNewBlog({ ...newBlog, title: target.value })
+          }
+        />
+      </div>
+      <div>
+        author
+        <input
+          type='text'
+          value={newBlog.author}
+          onChange={({ target }) =>
+            setNewBlog({ ...newBlog, author: target.value })
+          }
+        />
+      </div>
+      <div>
+        url
+        <input
+          type='text'
+          value={newBlog.url}
+          onChange={({ target }) =>
+            setNewBlog({ ...newBlog, url: target.value })
+          }
+        />
+      </div>
+      <button type='submit'>create</button>
+    </form>
+  )
+
   return (
     <div>
       <h2>blogs</h2>
@@ -95,6 +146,8 @@ const App = () => {
               logout
             </button>
           </p>
+          <h2>create new blog</h2>
+          {blogForm()}
           {blogList()}
         </div>
       )}
