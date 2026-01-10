@@ -1,0 +1,11 @@
+## login test
+## !!have to manually find out user's passowrdHash field in database first!!
+## read database table, or use console logs below to find out bcrypt hashed password
+POST http://localhost:3001/api/login
+content-type: application/json
+
+{
+    "username": "mluukkai",
+    "password": "salainen"
+}
+
