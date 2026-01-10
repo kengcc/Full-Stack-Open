@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
+import Blogs from './components/Blogs'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -10,7 +11,10 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState({
+    message: null,
+    type: null,
+  })
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -47,14 +51,17 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch {
-      setErrorMessage('wrong credentials')
+      setNotification({
+        message: 'wrong username or password',
+        type: 'error',
+      })
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification({ message: null, type: null })
       }, 5000)
     }
   }
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     const blogObject = {
       title: newBlog.title,
@@ -62,10 +69,26 @@ const App = () => {
       url: newBlog.url,
     }
 
-    blogService.create(blogObject).then((returnedBlog) => {
+    try {
+      const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
+      setNotification({
+        message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+        type: 'success',
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: null })
+      }, 5000)
       setNewBlog({ title: '', author: '', url: '' })
-    })
+    } catch {
+      setNotification({
+        message: 'failed to add blog',
+        type: 'error',
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: null })
+      }, 5000)
+    }
   }
 
   const loginForm = () => (
@@ -94,48 +117,17 @@ const App = () => {
     </form>
   )
 
-  const blogList = () => blogs.map((blog) => <Blog key={blog.id} blog={blog} />)
-
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        title
-        <input
-          type='text'
-          value={newBlog.title}
-          onChange={({ target }) =>
-            setNewBlog({ ...newBlog, title: target.value })
-          }
-        />
-      </div>
-      <div>
-        author
-        <input
-          type='text'
-          value={newBlog.author}
-          onChange={({ target }) =>
-            setNewBlog({ ...newBlog, author: target.value })
-          }
-        />
-      </div>
-      <div>
-        url
-        <input
-          type='text'
-          value={newBlog.url}
-          onChange={({ target }) =>
-            setNewBlog({ ...newBlog, url: target.value })
-          }
-        />
-      </div>
-      <button type='submit'>create</button>
-    </form>
-  )
+  const handleTitleChange = (event) =>
+    setNewBlog({ ...newBlog, title: event.target.value })
+  const handleAuthorChange = (event) =>
+    setNewBlog({ ...newBlog, author: event.target.value })
+  const handleUrlChange = (event) =>
+    setNewBlog({ ...newBlog, url: event.target.value })
 
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={errorMessage} />
+      <Notification message={notification.message} type={notification.type} />
 
       {!user && loginForm()}
       {user && (
@@ -147,8 +139,16 @@ const App = () => {
             </button>
           </p>
           <h2>create new blog</h2>
-          {blogForm()}
-          {blogList()}
+          <BlogForm
+            onSubmit={addBlog}
+            newTitle={newBlog.title}
+            newAuthor={newBlog.author}
+            newUrl={newBlog.url}
+            onTitleChange={handleTitleChange}
+            onAuthorChange={handleAuthorChange}
+            onUrlChange={handleUrlChange}
+          />
+          <Blogs blogs={blogs} />
         </div>
       )}
     </div>
