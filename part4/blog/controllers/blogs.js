@@ -1,6 +1,6 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
+const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', {
@@ -10,14 +10,9 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   const body = request.body
-
-  const user = await User.findById(body.userId)
-
-  if (!user) {
-    return response.status(400).json({ error: 'userId missing or not valid' })
-  }
+  const user = request.user
 
   if (!body.title || !body.url) {
     return response.status(400).json({ error: 'title and url are required' })
@@ -37,16 +32,33 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  const { id } = request.params
+blogsRouter.delete(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response) => {
+    const { id } = request.params
+    const user = request.user
 
-  const deletedBlog = await Blog.findByIdAndDelete(id)
-  if (!deletedBlog) {
-    return response.status(404).json({ error: 'blog not found' })
+    const blog = await Blog.findById(id)
+    if (!blog) {
+      return response.status(404).json({ error: 'blog not found' })
+    }
+
+    if (!blog.user || blog.user.toString() !== user._id.toString()) {
+      return response
+        .status(403)
+        .json({ error: 'only creator can delete blog' })
+    }
+
+    await Blog.findByIdAndDelete(id)
+    user.blogs = user.blogs.filter(
+      (blogId) => blogId.toString() !== blog._id.toString()
+    )
+    await user.save()
+
+    return response.status(204).end()
   }
-
-  return response.status(204).end()
-})
+)
 
 blogsRouter.put('/:id', async (request, response) => {
   const { id } = request.params
