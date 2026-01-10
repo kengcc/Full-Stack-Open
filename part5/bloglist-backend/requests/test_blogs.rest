@@ -1,0 +1,38 @@
+GET http://localhost:3001/api/blogs
+
+###
+
+POST http://localhost:3001/api/blogs
+content-type: application/json
+
+{
+    "title": "new title for exercise 4.17",
+    "author": "KCC",
+    "url": "www.html9s.com",
+    "likes": 1500,
+    "userId": "6961f4ef32db5bcb5f562f27"
+}
+
+
+### test invalid content
+POST http://localhost:3001/api/blogs
+content-type: application/json
+
+{
+    "content": "lol",
+    "important": true
+}
+
+###
+POST http://localhost:3001/api/blogs
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2OTYxZjRlZjMyZGI1YmNiNWY1NjJmMjciLCJpYXQiOjE3NjgwMjk0OTR9.swmrkNfwIg_2xMT676kHcS54cMTZa3_bmISvQ-Nr0oE
+
+{
+    "title": "jwt: new title for exercise 4.18",
+    "author": "KCC",
+    "url": "www.html9s.com",
+    "likes": 1500,
+    "userId": "6961f4ef32db5bcb5f562f27"
+}
+
