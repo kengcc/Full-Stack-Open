@@ -10,13 +10,11 @@ import NoteForm from './components/NoteForm'
 
 const App = () => {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('a new note...')
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [loginVisible, setLoginVisible] = useState(false)
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
@@ -28,6 +26,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(user)
       noteService.setToken(user.token)
     }
@@ -51,16 +50,9 @@ const App = () => {
     }
   }
 
-  const addNote = (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5,
-    }
-
+  const addNote = (noteObject) => {
     noteService.create(noteObject).then((returnedNote) => {
       setNotes(notes.concat(returnedNote))
-      setNewNote('')
     })
   }
 
@@ -73,7 +65,7 @@ const App = () => {
       .then((returnedNote) => {
         setNotes(notes.map((note) => (note.id === id ? returnedNote : note)))
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         )
@@ -82,10 +74,6 @@ const App = () => {
         }, 5000)
         setNotes(notes.filter((n) => n.id !== id))
       })
-  }
-
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
   }
 
   const notesToShow = showAll ? notes : notes.filter((note) => note.important)
@@ -102,16 +90,6 @@ const App = () => {
     </Togglable>
   )
 
-  const noteForm = () => (
-    <Togglable buttonLabel='new note'>
-      <NoteForm
-        onSubmit={addNote}
-        value={newNote}
-        handleChange={handleNoteChange}
-      />
-    </Togglable>
-  )
-
   return (
     <div>
       <h1>Notes</h1>
@@ -121,7 +99,9 @@ const App = () => {
       {user && (
         <div>
           <p>{user.name} logged in</p>
-          {noteForm()}
+          <Togglable buttonLabel='new note'>
+            <NoteForm createNote={addNote} />
+          </Togglable>
         </div>
       )}
 
