@@ -8,7 +8,6 @@ import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -62,14 +61,7 @@ const App = () => {
     }
   }
 
-  const addBlog = async (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newBlog.title,
-      author: newBlog.author,
-      url: newBlog.url,
-    }
-
+  const addBlog = async (blogObject) => {
     try {
       const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
@@ -80,7 +72,6 @@ const App = () => {
       setTimeout(() => {
         setNotification({ message: null, type: null })
       }, 5000)
-      setNewBlog({ title: '', author: '', url: '' })
     } catch {
       setNotification({
         message: 'failed to add blog',
@@ -118,13 +109,6 @@ const App = () => {
     </form>
   )
 
-  const handleTitleChange = (event) =>
-    setNewBlog({ ...newBlog, title: event.target.value })
-  const handleAuthorChange = (event) =>
-    setNewBlog({ ...newBlog, author: event.target.value })
-  const handleUrlChange = (event) =>
-    setNewBlog({ ...newBlog, url: event.target.value })
-
   return (
     <div>
       <h2>blogs</h2>
@@ -140,15 +124,7 @@ const App = () => {
             </button>
           </p>
           <Togglable buttonLabel='create new blog'>
-            <BlogForm
-              onSubmit={addBlog}
-              newTitle={newBlog.title}
-              newAuthor={newBlog.author}
-              newUrl={newBlog.url}
-              onTitleChange={handleTitleChange}
-              onAuthorChange={handleAuthorChange}
-              onUrlChange={handleUrlChange}
-            />
+            <BlogForm createBlog={addBlog} />
           </Togglable>
           <Blogs blogs={blogs} />
         </div>
