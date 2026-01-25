@@ -1,8 +1,8 @@
 const Footer = () => {
   const footerStyle = {
-    color: "green",
-    fontStyle: "italic",
-    textAlign: "center",
+    color: 'green',
+    fontStyle: 'italic',
+    textAlign: 'center',
   }
 
   return (
