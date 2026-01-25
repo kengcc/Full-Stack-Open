@@ -10,9 +10,11 @@ li {
 }
 
 .blog {
-  color: yellow;
   padding-top: 5px;
   font-size: 15px;
+  border: solid;
+  border-width: 1px;
+  margin-bottom: 5px;
 }
 
 .message {

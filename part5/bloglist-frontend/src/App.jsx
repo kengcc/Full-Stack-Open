@@ -25,6 +25,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       if (user) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setUser(user)
         blogService.setToken(user.token)
       }
@@ -126,6 +127,7 @@ const App = () => {
           <Togglable buttonLabel='create new blog'>
             <BlogForm createBlog={addBlog} />
           </Togglable>
+          <p></p>
           <Blogs blogs={blogs} />
         </div>
       )}
