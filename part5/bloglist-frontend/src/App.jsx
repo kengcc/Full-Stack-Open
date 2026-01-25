@@ -143,7 +143,10 @@ const App = () => {
             <BlogForm createBlog={addBlog} />
           </Togglable>
           <p></p>
-          <Blogs blogs={blogs} updateBlog={updateBlog} />
+          <Blogs
+            blogs={blogs.sort((a, b) => b.likes - a.likes)}
+            updateBlog={updateBlog}
+          />
         </div>
       )}
     </div>

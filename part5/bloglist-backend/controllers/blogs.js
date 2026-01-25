@@ -52,12 +52,12 @@ blogsRouter.delete(
 
     await Blog.findByIdAndDelete(id)
     user.blogs = user.blogs.filter(
-      (blogId) => blogId.toString() !== blog._id.toString()
+      (blogId) => blogId.toString() !== blog._id.toString(),
     )
     await user.save()
 
     return response.status(204).end()
-  }
+  },
 )
 
 blogsRouter.put('/:id', async (request, response) => {
@@ -68,7 +68,7 @@ blogsRouter.put('/:id', async (request, response) => {
     new: true,
     runValidators: true,
     context: 'query',
-  })
+  }).populate('user', { username: 1, name: 1 })
 
   if (!updatedBlog) {
     return response.status(404).json({ error: 'blog not found' })
