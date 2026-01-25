@@ -125,6 +125,21 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (id) => {
+    try {
+      await blogService.remove(id)
+      setBlogs(blogs.filter((blog) => blog.id !== id))
+    } catch {
+      setNotification({
+        message: 'failed to delete blog',
+        type: 'error',
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: null })
+      }, 5000)
+    }
+  }
+
   return (
     <div>
       <h2>blogs</h2>
@@ -146,6 +161,8 @@ const App = () => {
           <Blogs
             blogs={blogs.sort((a, b) => b.likes - a.likes)}
             updateBlog={updateBlog}
+            deleteBlog={deleteBlog}
+            user={user}
           />
         </div>
       )}
