@@ -1,5 +1,5 @@
 const { test, describe, expect, beforeEach } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { createNote, loginWith } = require('./helper')
 
 describe('Note app', () => {
   test('login fails with wrong password', async ({ page }) => {
@@ -22,7 +22,7 @@ describe('Note app', () => {
       },
     })
 
-    await page.goto('http://localhost:5173')
+    await page.goto('/') // baseURL is set in the config, so this will go to http://localhost:5173/
   })
 
   test('front page can be opened', async ({ page }) => {
@@ -37,9 +37,6 @@ describe('Note app', () => {
 
   test('user can log in', async ({ page }) => {
     await loginWith(page, 'mluukkai', 'salainen')
-    await page.getByLabel('username').fill('mluukkai')
-    await page.getByLabel('password').fill('salainen')
-    await page.getByRole('button', { name: 'login' }).click()
     await expect(page.getByText('Matti Luukkainen logged in')).toBeVisible()
   })
 
@@ -49,17 +46,13 @@ describe('Note app', () => {
     })
 
     test('a new note can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'new note' }).click()
-      await page.getByRole('textbox').fill('a note created by playwright')
-      await page.getByRole('button', { name: 'save' }).click()
+      await createNote(page, 'a note created by playwright')
       await expect(page.getByText('a note created by playwright')).toBeVisible()
     })
 
     describe('and a note exists', () => {
       beforeEach(async ({ page }) => {
-        await page.getByRole('button', { name: 'new note' }).click()
-        await page.getByRole('textbox').fill('another note by playwright')
-        await page.getByRole('button', { name: 'save' }).click()
+        await createNote(page, 'another note by playwright')
       })
 
       test('importance can be changed', async ({ page }) => {
